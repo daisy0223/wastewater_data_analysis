@@ -1,2 +1,3 @@
 This report reproduces a wastewater viral metagenomics analysis, presenting figures for each step. The data comes from a peer-reviewed study (https://journals.asm.org/doi/10.1128/aem.01448-21) and covers two treatment plants (HTP, PL) from August 2020 to January 2021.
-This repos will contain intermediate results, metadata, R script and static html
+
+This repos will contain intermediate results, metadata, R script and static html.
