@@ -1,0 +1,9 @@
+SRA	SampleID	Plant	Date	Enriched	position	ref_base	var_base	change	var_freq	position_coverage	class	ORF	ORF_function
+SRR14530735	HTP_9_15_2020	HTP	2020-09-15	enriched	9330	T	A	T9330A	1	5	SNS	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion
+SRR14530845	HTP_12_22_2020	HTP	2020-12-22	enriched	8082	G	A	G8082A	1	7	SNS	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion
+SRR14530845	HTP_12_22_2020	HTP	2020-12-22	enriched	14632	T	A	T14632A	1	12	SNS	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion
+SRR14530845	HTP_12_22_2020	HTP	2020-12-22	enriched	14636	T	A	T14636A	1	12	SNS	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion
+SRR14530846	HTP_12_04_2020	HTP	2020-12-04	enriched	23077	C	A	C23077A	1	10	SNS	S	Spike protein: receptor binding, cell entry
+SRR14530847	HTP_11_3_2020	HTP	2020-11-03	enriched	12571	G	A	G12571A	1	5	SNS	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion
+SRR14530847	HTP_11_3_2020	HTP	2020-11-03	enriched	27749	G	A	G27749A	1	6	SNS	ORF7a	Immune modulation
+SRR14530848	HTP_11_24_2020	HTP	2020-11-24	enriched	27350	T	A	T27350A	1	11	SNS	ORF6	Interferon antagonist

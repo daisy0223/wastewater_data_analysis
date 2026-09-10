@@ -1,0 +1,7 @@
+virus_group	display_name	family	genus	species	detection_threshold	detected_libraries	total_paired_libraries	detection_percent
+Pepper mild mottle virus	Pepper mild mottle virus (reference control)	Virgaviridae	Tobamovirus	Tobamovirus capsici	50	62	62	100
+Human norovirus	Human norovirus	Caliciviridae	Norovirus	Norovirus norwalkense	50	0	62	0
+Seasonal human coronavirus	Seasonal human coronavirus	Coronaviridae	Alphacoronavirus / Betacoronavirus	multiple species	50	2	62	3.2258064516129
+Human adenovirus	Human adenovirus	Adenoviridae	Mastadenovirus	multiple species	50	0	62	0
+Influenza A virus	Influenza A virus	Orthomyxoviridae	Alphainfluenzavirus	Alphainfluenzavirus influenzae	50	1	62	1.61290322580645
+SARS-CoV-2	SARS-CoV-2	Coronaviridae	Betacoronavirus	Betacoronavirus pandemicum	50	26	62	41.9354838709677

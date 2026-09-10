@@ -1,0 +1,17 @@
+position	ORF	ORF_function	change	n_samples	samples	snv_label
+8082	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion	G8082A	1	HTP_12_22_2020	G8082A
+[ORF1ab]
+9330	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion	T9330A	1	HTP_9_15_2020	T9330A
+[ORF1ab]
+12571	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion	G12571A	1	HTP_11_3_2020	G12571A
+[ORF1ab]
+14632	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion	T14632A	1	HTP_12_22_2020	T14632A
+[ORF1ab]
+14636	ORF1ab	Replicase polyprotein: RNA synthesis, proofreading, immune evasion	T14636A	1	HTP_12_22_2020	T14636A
+[ORF1ab]
+23077	S	Spike protein: receptor binding, cell entry	C23077A	1	HTP_12_04_2020	C23077A
+[S]
+27350	ORF6	Interferon antagonist	T27350A	1	HTP_11_24_2020	T27350A
+[ORF6]
+27749	ORF7a	Immune modulation	G27749A	1	HTP_11_3_2020	G27749A
+[ORF7a]
