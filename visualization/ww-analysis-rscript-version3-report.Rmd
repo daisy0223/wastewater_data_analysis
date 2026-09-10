@@ -1,0 +1,238 @@
+---
+title: "Wastewater viral metagenomic analysis"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: false
+    self_contained: true
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  out.width = "90%"
+)
+
+# The report is designed to live beside the companion analysis script and figures.
+report_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
+analysis_script <- file.path(report_dir, "ww-analysis-rscript-version3.r")
+if (!file.exists(analysis_script)) {
+  stop("Place this Rmd file beside the companion analysis script.")
+}
+
+figure_path <- function(filename) {
+  path <- file.path(report_dir, filename)
+  if (!file.exists(path)) stop("Expected figure not found: ", path)
+  path
+}
+```
+
+# 0. Overview
+
+This report reproduces wastewater viral metagenomics analysis and displays its figures for each step. The genomic data used in this report was selected from the peer-reviewed publication [https://journals.asm.org/doi/10.1128/aem.01448-21](https://journals.asm.org/doi/10.1128/aem.01448-21), including two plants (HTP and PL) from August 2020 through January 2021 and enriched and unenriched sequencing libraries from the same wastewater samples.
+
+The goal is to address five required questions. Each question ends with a review question and answer key. The report is descriptive: sequence detections and variant calls are evidence under the stated criteria, not proof of infectivity, clinical incidence, viral concentration, or biological absence.
+
+```{r run-analysis, include=FALSE, eval=FALSE}
+source(analysis_script)
+```
+
+# 1. Question 1. Quality control
+
+**Guiding question: How can high duplication and low Q30 interfere with wastewater genomic data interpretation?**
+
+Quality control cleans the raw sequencing data before biological interpretation. Higher Q30 after trimming indicates that retained bases have lower estimated base-calling error. Duplication is shown separately because repeated reads may not provide independent support for rare variants or diversity estimates. Neither measure alone is a biological abundance estimate.
+
+```{r q1-q30, fig.cap="Q1. Read quality before and after trimming: Q30 rate by sample."}
+knitr::include_graphics(figure_path("q1.1_q30_before_after_trim.png"))
+```
+
+```{r q1-duplication, fig.cap="Q1. Post-trim duplication rate by sample."}
+knitr::include_graphics(figure_path("q1.2_duplicate_rate_after_trim.png"))
+```
+
+### Review question
+
+**How can high duplication and low Q30 interfere with interpretation of wastewater genomic data?**
+
+A. They confirm that a virus is abundant and genetically diverse.  
+B. They can produce non-independent reads and error-prone base calls, potentially inflating apparent viral diversity or creating false variants.  
+C. They prove that the sample contains human contamination.  
+D. They affect file size but not biological conclusions.
+
+<details><summary>Answer</summary>
+
+**B.** High duplication weakens independent support for observations, while low-quality bases can mimic real mutations or viral detections.
+
+</details>
+
+# 2. Question 2. Host filtering
+
+**Guiding question: How can human genetic material affect wastewater viral surveillance?**
+
+Host filtering removes human-aligned reads to protect potentially sensitive genetic information and to reduce host background. A larger host-derived fraction leaves less usable sequencing depth for low-abundance nonhuman viruses, so differences in host background can affect surveillance sensitivity.
+
+```{r q2-human, fig.cap="Q2. Fraction of reads mapping to the human genome before removal."}
+knitr::include_graphics(figure_path("q2_human_removal_rate.png"))
+```
+
+### Review question
+
+**Why can a wastewater sample with a large human-derived read fraction appear to contain fewer respiratory viruses than one with a similar true viral community?**
+
+A. Human-derived reads are more likely to be respiratory viruses.  
+B. Host background uses sequencing capacity, reducing sensitivity for low-abundance viral genomes; non-detection may not mean biological absence.  
+C. Human reads cause viral genomes to mutate.  
+D. Removing human reads increases viral RNA in the original sample.
+
+<details><summary>Answer</summary>
+
+**B.** Variable host background can create an apparent biological difference when the true issue is analytical sensitivity.
+
+</details>
+
+# 3–4. Questions 3–4. Taxonomic classification and abundance over time
+
+## 3. Question 3. Which organisms are present, and why might respiratory viruses not be visible among the dominant taxa?
+
+Taxonomic classification identifies the organisms represented in the sequencing data. The composition plot focuses on matched enrichment status within the same plant/date, reducing temporal and site-related confounding when comparing enrichment. The displayed taxa are the highest-coverage taxa across all paired libraries, and SARS-CoV-2 is retained for visibility if it is not naturally in that set. Therefore, a virus without a visible segment may be present at low abundance or be included in `Other`; the plot cannot establish absence.
+
+```{r q3-composition, fig.cap="Q3. Top viral taxa by relative coverage across paired enriched and unenriched wastewater libraries."}
+knitr::include_graphics(figure_path("q3_q4_top10_composition_enriched_vs_unenriched.png"))
+```
+
+### Review question
+
+**Why can respiratory viruses be absent from the visible top taxa even when they are present in wastewater?**
+
+A. Their absence from the plot proves no respiratory infections occurred.  
+B. Abundant food- and plant-associated viruses can dominate the relative signal, pushing lower-abundance respiratory viruses outside the displayed taxa.  
+C. Human-read removal removes respiratory-virus reads.  
+D. Enrichment converts respiratory-virus reads into plant-virus reads.
+
+<details><summary>Answer</summary>
+
+**B.** Relative composition reflects wastewater viral ecology and observed coverage, not necessarily public-health importance.
+
+</details>
+
+## 4. Question 4. How do selected viruses appear across sampling dates and enrichment status?
+
+The selected-virus heatmap is the target-specific detection follow-up to the broad composition plot. It evaluates pepper mild mottle virus (a reference control), human norovirus, seasonal human coronaviruses (excluding SARS-CoV-2), human adenovirus, influenza A virus, and SARS-CoV-2 across sampling dates in the same paired libraries. Unlike the relative-composition plot above, the heatmap does not estimate abundance or wastewater concentration.
+
+A colored tile means that at least one matching reference/segment met the predefined read-support criterion in that library. A gray tile means that no matching record met that criterion; it does **not** prove biological absence. The rule does not add several weak reference matches together, and it should not be interpreted as evidence of infectivity or viral concentration.
+
+```{r q4-detection-heatmap, fig.cap="Q4. Targeted detection calls for selected viruses in paired wastewater libraries."}
+knitr::include_graphics(figure_path("q3_q4.2_viruses_of_interest_detection_heatmap.png"))
+```
+
+```{r q4-detection-summary}
+detection_summary <- readr::read_tsv(
+  file.path(report_dir, "q3_q4.2_viruses_of_interest_detection_summary.tsv"),
+  show_col_types = FALSE
+)
+detection_display <- data.frame(
+  Virus = detection_summary$display_name,
+  `Detected libraries` = detection_summary$detected_libraries,
+  `Paired libraries evaluated` = detection_summary$total_paired_libraries,
+  `Detection rate` = sprintf("%.1f%%", detection_summary$detection_percent),
+  check.names = FALSE
+)
+knitr::kable(
+  detection_display,
+  caption = "Selected-virus detection summary under the predefined per-reference read-support criterion."
+)
+```
+
+### Review question
+
+**If a respiratory virus is not visible in the top-taxa plot, what is the strongest next analysis?**
+
+A. Treat the missing segment as proof of absence.  
+B. Examine target-specific, sample-level read support against a predefined detection criterion, including matched enriched and unenriched libraries.  
+C. Infer its presence from plant-virus abundance.  
+D. Pool all samples until it becomes visible in the composition plot.
+
+<details><summary>Answer</summary>
+
+**B.** Target-specific analysis separates a virus that is not dominant from one that lacks sufficient evidence for a detection call.
+
+</details>
+
+# 5. Question 5. SARS-CoV-2 variants, when sufficient sequence is available
+
+## Detection by sample
+
+The detection plot displays SARS-CoV-2 coverage by sample and labels genome breadth. Samples with at least 50% breadth are eligible for the stringent SNV analysis; this breadth criterion helps avoid interpreting variation from genomes observed only in small fragments.
+
+```{r q5-detection, fig.cap="Q5. SARS-CoV-2 coverage and genome breadth by sample."}
+knitr::include_graphics(figure_path("q5.1_sars_cov2_detection_by_sample.png"))
+```
+
+```{r q5-eligibility}
+sars_summary <- readr::read_tsv(
+  file.path(report_dir, "sars_cov2_sample_summary.tsv"),
+  show_col_types = FALSE
+)
+high_breadth <- sars_summary[sars_summary$high_breadth, , drop = FALSE]
+cat(
+  sprintf(
+    "The stringent SNV analysis includes %d of %d SARS-CoV-2 sample summaries that meet the genome-breadth criterion.",
+    nrow(high_breadth), nrow(sars_summary)
+  )
+)
+```
+
+## High-frequency SNVs and genome context
+
+High-frequency SNV calls are distinct position/change events from the high-breadth sample set. The table panel retains eligible samples with zero such calls, and the genome map groups calls by genomic position/change and annotates their open reading frame. These calls are descriptive because the script does not apply a separate per-site sequencing-depth cutoff.
+
+```{r q5-genome-map, fig.cap="Q5. Eligible samples, high-frequency SNV counts, and genomic locations."}
+knitr::include_graphics(figure_path("q5.2_sars_cov_2_high_frequency_snv_genome_map.png"))
+```
+
+## Temporal variation and ORF burden
+
+The temporal-variability plot uses **all** observed SNVs from high-breadth samples. For each plant/date/position, it averages variant frequency and ranks positions by variation across dates. It is intentionally different from the high-frequency analysis, which asks whether a variant dominates within an individual sample. Missing observations are not treated as zero.
+
+```{r q5-variable-snv, fig.cap="Q5. The most variable SARS-CoV-2 SNV positions over time."}
+knitr::include_graphics(figure_path("q5.4_sars_cov2_snp_top_variable_over_time.png"))
+```
+
+The ORF panel counts distinct high-frequency positions by plant, date, and open reading frame. It is a count of qualifying calls, not an estimate of total viral burden or evidence of functional selection.
+
+```{r q5-orf-burden, fig.cap="Q5. High-frequency SARS-CoV-2 SNV counts by open reading frame over time."}
+knitr::include_graphics(figure_path("q5.3_sars_cov_high_frequency_snv_count_by_orf_over_time.png"))
+```
+
+### Review question
+
+**Why can SARS-CoV-2 SNVs that vary most across sampling dates differ from SNVs that are high frequency within individual samples?**
+
+A. The two groups should always be identical if the data are valid.  
+B. Temporal variability measures change between dates, while high frequency measures within-sample predominance; a mutation may fluctuate without becoming dominant, or remain dominant with little temporal change.  
+C. High-frequency SNVs occur only in noncoding regions.  
+D. Any temporally variable SNV necessarily reflects functional selection.
+
+<details><summary>Answer</summary>
+
+**B.** The figures describe different properties of the wastewater viral population: longitudinal change versus within-sample dominance.
+
+</details>
+
+# Reproducibility and companion outputs
+
+To regenerate the companion PNG and TSV outputs, run the companion analysis script before rendering this report. The companion tables include the top-taxa taxonomy table, selected-virus detection calls and summary, SARS-CoV-2 sample summary, stringent SNV table, annotated SNV table, and high-frequency SNV tables.
+
+Interpret trends conservatively: reference-based detection can be affected by mapping specificity and sequencing depth, enrichment can change analytical sensitivity without proving a higher wastewater concentration, and wastewater sequence data alone do not identify individual infections or viral infectivity.
+
+# Brief results summary
+
+After trimming, duplicate reads were observed; the downstream viral results used for the next analytical steps were deduplicated before interpretation. Plant-associated viruses dominated the paired-library composition, while target-specific analysis detected SARS-CoV-2 more often than the other selected respiratory viruses and detected the pepper mild mottle virus reference control in every paired library. Only a small high-breadth SARS-CoV-2 subset supported SNV analysis, so the observed variant patterns are descriptive rather than evidence of lineage prevalence or functional selection.
